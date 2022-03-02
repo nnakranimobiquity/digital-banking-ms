@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: otp-service
+  config:
+    import: optional:configserver:http://localhost:8888
+  sleuth:
+    sampler:
+      probability: 1.0
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    platform: postgres
+    url: jdbc:postgresql://localhost:5430/DigitalBanking
+    username: postgres
+    password: Neel765
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    show-sql: true
+    database: POSTGRESQL
+    hibernate:
+      ddl-auto: create
+server:
+  port: 8100
+#for actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+#  spring.sleuth.sampler.probability=1.0

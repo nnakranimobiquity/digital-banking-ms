@@ -1,0 +1,86 @@
+version: '3.7'
+services:
+  customer-service:
+    image: digital-banking/dbv1-customer-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8000:8000"
+    networks:
+      - digital-banking-network
+    depends_on:
+      - naming-server
+      - digital-banking-postgresql
+      - digital-banking-config
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      SPRING.DATASOURCE.URL: jdbc:postgresql://DIGITAL_BANKING_POSTGRESQL:5432/postgres
+      SPRING.CONFIG.IMPORT: optional:configserver:http://digital-banking-config:8888
+  otp-service:
+    image: digital-banking/dbv1-otp-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8100:8100"
+    networks:
+      - digital-banking-network
+    depends_on:
+      - naming-server
+      - digital-banking-postgresql
+      - digital-banking-config
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      SPRING.DATASOURCE.URL: jdbc:postgresql://DIGITAL_BANKING_POSTGRESQL:5432/postgres
+      SPRING.CONFIG.IMPORT: optional:configserver:http://digital-banking-config:8888
+  digital-banking-config:
+    image: digital-banking/dbv1-digital-banking-config:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8888:8888"
+    networks:
+      - digital-banking-network
+    depends_on:
+      - naming-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+  api-gateway:
+    image: digital-banking/dbv1-api-gateway:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8765:8765"
+    networks:
+      - digital-banking-network
+    depends_on:
+      - naming-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+  naming-server:
+    image: digital-banking/dbv1-naming-server:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8761:8761"
+    networks:
+      - digital-banking-network
+  zipkin-server:
+    image: openzipkin/zipkin
+    mem_limit: 300m
+    ports:
+      - "9411:9411"
+    networks:
+      - digital-banking-network
+  digital-banking-postgresql:
+    container_name: DIGITAL_BANKING_POSTGRESQL
+    image: postgres:latest
+    networks:
+      - digital-banking-network
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Neel765
+#      POSTGRES_DB: default_database
+      POSTGRES_HOST_AUTH_METHOD: trust
+networks:
+  digital-banking-network:

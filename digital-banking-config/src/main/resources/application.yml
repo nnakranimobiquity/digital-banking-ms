@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: digital-banking-config
+  sleuth:
+    sampler:
+      probability: 1.0
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///Users/nnakrani/Desktop/spring-cloud/digital-banking-git-local-config
+          default-label: master
+server:
+  port: 8888
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#spring.cloud.config.server.git.default-label=master

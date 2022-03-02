@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: Otp-Service API Specification
+  description: Otp-Service API Specification (Digital Banking)
+  version: v1
+servers:
+  - url: http://localhost:8100/otp-service/
+    description: The server
+paths:
+  /client-api/v1/otp/initiate:
+    post:
+      tags:
+        - OTP
+      operationId: initiateOtp
+      description: service to initiate an OTP for Customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitiateOtpRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: '#/components/schemas/BadRequestException'
+        404:
+          $ref: '#/components/schemas/NotFoundException'
+        500:
+          $ref: '#/components/schemas/InternalServerException'
+  /service-api/v2/otp/validate:
+    post:
+      tags:
+        - OTP
+      operationId: validateOtp
+      description: service to validate an OTP for Customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateOtpRequest'
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: '#/components/schemas/BadRequestException'
+        404:
+          $ref: '#/components/schemas/NotFoundException'
+        500:
+          $ref: '#/components/schemas/InternalServerException'
+components:
+  schemas:
+    BadRequestException:
+      type: object
+      description: Generic exception representating the bad request
+      x-java-type: com.mobiquity.v1.exceptions.BadRequestException
+    NotFoundException:
+      type: object
+      description: Generic Exception representating data not found exception
+      x-java-type: com.mobiquity.v1.exceptions.BadRequestException
+    InternalServerException:
+      type: object
+      description: Generic exception representating internal server error
+      x-java-type: com.mobiquity.v1.exceptions.BadRequestException
+    UserName:
+      type: string
+      description: The online user name.
+      minLength: 1
+      maxLength: 30
+      example: "JohnSmith1"
+    TemplateId:
+      type: string
+      description: Template Id to retrieve OTP
+      maxLength: 255
+      example: "REGISTRATION"
+    OTP:
+      type: string
+      description: OTP Generated for Customer
+      maxLength: 6
+      example: "234354"
+
+
+    InitiateOtpRequest:
+      type: object
+      required:
+        - userName
+      properties:
+        userName:
+          $ref: '#/components/schemas/UserName'
+        templateId:
+          $ref: '#/components/schemas/TemplateId'
+      example:
+        {
+          "userName": "JohnSmith1",
+          "templateId": "REGISTRATION"
+        }
+    ValidateOtpRequest:
+      type: object
+      required:
+        - userName
+        - otp
+      properties:
+        userName:
+          $ref: '#/components/schemas/UserName'
+        otp:
+          $ref: '#/components/schemas/OTP'
+      example:
+        {
+          "userName": "JohnSmith1",
+          "otp": "123463"
+        }
